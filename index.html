@@ -5,18 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>МАИ: Восстановление СЖАТ</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключение PWA-манифеста -->
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="icon.png">
-    <!-- Подключение Chart.js для графиков -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="app-layout">
-        <aside class="sidebar">
+        
+        <!-- Затемнение фона при открытом меню на телефоне -->
+        <div id="overlay" class="overlay" onclick="toggleMenu()"></div>
+
+        <!-- БОКОВОЕ МЕНЮ -->
+        <aside class="sidebar" id="sidebar">
             <div class="logo-area">
                 <div class="logo-icon">МАИ</div>
                 <div class="logo-text">Многокритериальный<br>анализ</div>
+                <button class="close-btn" onclick="toggleMenu()">✕</button>
             </div>
             <nav class="nav-menu">
                 <button class="nav-btn active" onclick="showTab('tab-instruction', this)"><span class="icon">📖</span> Инструкция</button>
@@ -28,7 +32,15 @@
             <div class="sidebar-footer"><span class="icon">🛡️</span> Удобный инструмент<br>для принятия решений</div>
         </aside>
 
+        <!-- РАБОЧАЯ ОБЛАСТЬ -->
         <main class="main-content">
+            
+            <!-- МОБИЛЬНАЯ ШАПКА (видна только на телефонах) -->
+            <header class="mobile-header">
+                <button class="menu-btn" onclick="toggleMenu()">☰</button>
+                <div class="mobile-title">МАИ Анализ</div>
+            </header>
+
             <!-- ВКЛАДКА 1: ИНСТРУКЦИЯ -->
             <section id="tab-instruction" class="tab-content active">
                 <h1>Инструкция по работе</h1>
@@ -37,15 +49,17 @@
                 <div class="card">
                     <h2>Шаг 1. Как выставлять баллы (от 1 до 3) в «Исходных данных»</h2>
                     <p>Для объективной оценки устройств используется строгая логика морфологического анализа. Оценка <strong>1</strong> — наиболее неблагоприятный фактор, <strong>3</strong> — наиболее благоприятный для условий ЧС.</p>
-                    <table class="instruction-table">
-                        <thead><tr><th>Критерий</th><th>Оценка 1 (Плохо)</th><th>Оценка 2 (Средне)</th><th>Оценка 3 (Хорошо)</th></tr></thead>
-                        <tbody>
-                            <tr><td><strong>X (Трудоемкость)</strong></td><td>Поиск причин отказов, полная замена оборудования</td><td>Восстановление отдельных частей устройств</td><td>Минимальные трудозатраты (быстрый монтаж)</td></tr>
-                            <tr><td><strong>P (Стоимость)</strong></td><td>Наличие дорогостоящего оборудования</td><td>Средняя стоимость оборудования и работ</td><td>Относительно низкая стоимость</td></tr>
-                            <tr><td><strong>K (Доступность)</strong></td><td>Отсутствие резервных устройств</td><td>Дефицит резервных устройств</td><td>Наличие резервных устройств</td></tr>
-                            <tr><td><strong>S (Квалификация)</strong></td><td>Требуются специалисты высокой квалификации</td><td>Квалифицированные специалисты</td><td>Допускаются специалисты низкой квалификации</td></tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="instruction-table">
+                            <thead><tr><th>Критерий</th><th>Оценка 1 (Плохо)</th><th>Оценка 2 (Средне)</th><th>Оценка 3 (Хорошо)</th></tr></thead>
+                            <tbody>
+                                <tr><td><strong>X (Трудоемкость)</strong></td><td>Поиск причин отказов, полная замена оборудования</td><td>Восстановление отдельных частей устройств</td><td>Минимальные трудозатраты (быстрый монтаж)</td></tr>
+                                <tr><td><strong>P (Стоимость)</strong></td><td>Наличие дорогостоящего оборудования</td><td>Средняя стоимость оборудования и работ</td><td>Относительно низкая стоимость</td></tr>
+                                <tr><td><strong>K (Доступность)</strong></td><td>Отсутствие резервных устройств</td><td>Дефицит резервных устройств</td><td>Наличие резервных устройств</td></tr>
+                                <tr><td><strong>S (Квалификация)</strong></td><td>Требуются специалисты высокой квалификации</td><td>Квалифицированные специалисты</td><td>Допускаются специалисты низкой квалификации</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="info-box" style="margin-top: 15px; background: #fffbeb; border-color: #fcd34d; color: #92400e;"><span class="icon">💡</span> <strong>Примечание:</strong> Данные значения являются примером. Вы можете адаптировать шкалу оценок под свои задачи.</div>
                 </div>
                 <div class="card">
@@ -66,17 +80,19 @@
                 <p class="subtitle">Введите значения баллов (от 1 до 3) для каждого устройства по критериям</p>
                 <div class="info-box"><span class="icon">⚠️</span> Внимание! Все поля обязательны для заполнения. Значения должны быть целыми числами от 1 до 3.</div>
                 <div class="card table-card">
-                    <table id="alternativesTable">
-                        <thead><tr><th>Устройство</th><th title="Трудоемкость">X</th><th title="Стоимость">P</th><th title="Доступность">K</th><th title="Квалификация">S</th></tr></thead>
-                        <tbody>
-                            <tr><td>Рельсовые цепи (РЦ)</td><td><input type="number" id="rc_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="rc_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="rc_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="rc_s" min="1" max="3" placeholder="1-3"></td></tr>
-                            <tr><td>Электронная система счета осей (ЭССО)</td><td><input type="number" id="esso_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="esso_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="esso_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="esso_s" min="1" max="3" placeholder="1-3"></td></tr>
-                            <tr><td>Балиса</td><td><input type="number" id="balisa_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="balisa_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="balisa_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="balisa_s" min="1" max="3" placeholder="1-3"></td></tr>
-                            <tr><td>Волоконно-оптический датчик (ВОД)</td><td><input type="number" id="vod_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="vod_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="vod_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="vod_s" min="1" max="3" placeholder="1-3"></td></tr>
-                            <tr><td>Индуктивно-проводной датчик (ИПД)</td><td><input type="number" id="ipd_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="ipd_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="ipd_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="ipd_s" min="1" max="3" placeholder="1-3"></td></tr>
-                            <tr><td>Датчик на основе ПАВ</td><td><input type="number" id="pav_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="pav_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="pav_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="pav_s" min="1" max="3" placeholder="1-3"></td></tr>
-                        </tbody>
-                    </table>
+                    <div class="table-responsive">
+                        <table id="alternativesTable">
+                            <thead><tr><th>Устройство</th><th title="Трудоемкость">X</th><th title="Стоимость">P</th><th title="Доступность">K</th><th title="Квалификация">S</th></tr></thead>
+                            <tbody>
+                                <tr><td>Рельсовые цепи (РЦ)</td><td><input type="number" id="rc_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="rc_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="rc_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="rc_s" min="1" max="3" placeholder="1-3"></td></tr>
+                                <tr><td>Электронная система счета осей (ЭССО)</td><td><input type="number" id="esso_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="esso_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="esso_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="esso_s" min="1" max="3" placeholder="1-3"></td></tr>
+                                <tr><td>Балиса</td><td><input type="number" id="balisa_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="balisa_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="balisa_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="balisa_s" min="1" max="3" placeholder="1-3"></td></tr>
+                                <tr><td>Волоконно-оптический датчик (ВОД)</td><td><input type="number" id="vod_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="vod_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="vod_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="vod_s" min="1" max="3" placeholder="1-3"></td></tr>
+                                <tr><td>Индуктивно-проводной датчик (ИПД)</td><td><input type="number" id="ipd_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="ipd_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="ipd_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="ipd_s" min="1" max="3" placeholder="1-3"></td></tr>
+                                <tr><td>Датчик на основе ПАВ</td><td><input type="number" id="pav_x" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="pav_p" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="pav_k" min="1" max="3" placeholder="1-3"></td><td><input type="number" id="pav_s" min="1" max="3" placeholder="1-3"></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                     <div class="button-row">
                         <button class="secondary-btn" onclick="clearData()">Очистить форму</button>
                         <button class="primary-btn" onclick="showTab('tab-criteria', document.querySelectorAll('.nav-btn')[2])">Далее ➔</button>

@@ -1,9 +1,19 @@
-// --- НАВИГАЦИЯ ---
+// --- НАВИГАЦИЯ И МЕНЮ ---
+function toggleMenu() {
+    document.querySelector('.sidebar').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('active');
+}
+
 function showTab(tabId, btnElement) {
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
     document.getElementById(tabId).classList.add('active');
     if(btnElement) btnElement.classList.add('active');
+
+    // Если открыто на телефоне — закрываем меню после выбора
+    if (window.innerWidth <= 768 && document.querySelector('.sidebar').classList.contains('open')) {
+        toggleMenu();
+    }
 }
 
 // --- ОЧИСТКА ---
@@ -134,9 +144,9 @@ function displayResults(globalPriorities, altNames, OS) {
     });
 }
 
-// --- PWA (SERVICE WORKER) ---
+// --- PWA ---
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(err => console.log('SW error:', err));
+    navigator.serviceWorker.register('/ahp-app/sw.js').catch(err => console.log('SW error:', err));
   });
 }
