@@ -1,0 +1,21 @@
+{
+  "name": "Программный комплекс поддержки принятия решений",
+  "short_name": "МАИ-Анализ",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#1e293b",
+  "description": "Выбор способа восстановления СЖАТ методом анализа иерархий",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
